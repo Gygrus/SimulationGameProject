@@ -1,4 +1,5 @@
 package agh.ics.oop;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +7,8 @@ import java.util.List;
 import static java.lang.System.out;
 
 public class Animal extends MapObject implements GlobalValues {
+    public int id;
+    public int numOfChildren = 0;
     public int birth, death;
     private int energy;
     private ArrayList<Integer> genes;
@@ -14,7 +17,8 @@ public class Animal extends MapObject implements GlobalValues {
     private List<IPositionChangeObserver> observerList = new ArrayList<>();
 
 
-    public Animal(AbstractWorldMap map, Vector2d initialPosition, ArrayList<Integer> genes, int energy, int birth) {
+    public Animal(AbstractWorldMap map, Vector2d initialPosition, ArrayList<Integer> genes, int energy, int birth, int id) {
+        this.id = id;
         this.birth = birth;
         this.energy = energy;
         this.genes = genes;
@@ -30,11 +34,31 @@ public class Animal extends MapObject implements GlobalValues {
             case 4 -> "src/main/resources/down.png";
             case 2 -> "src/main/resources/right.png";
             case 6 -> "src/main/resources/left.png";
-            default -> null;
+            default -> "src/main/resources/up.png";
         };
     }
 
+//    @Override
+//    public boolean equals(Animal o){
+//        if ((this == o) || (this.id == o.id)){
+//            return true;
+//        }
+//        return false;
+//    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id);
+    }
+
     public ArrayList<Integer> getGenes() { return this.genes; }
+
+    @Override
+    public String getLabel(){
+        return this.position.toString() + this.energy + ' ' + this.map.getAnimals().get(this.position).size();
+    }
+
+    public int getChildren() { return this.numOfChildren; }
 
     public int getEnergy() { return this.energy; }
 
@@ -74,19 +98,19 @@ public class Animal extends MapObject implements GlobalValues {
     }
 
     public void move() {
-        int randomNum = this.genes.get(ThreadLocalRandom.current().nextInt(0, this.genes.size()));
+        int randomNum = this.genes.get(ThreadLocalRandom.current().nextInt(0, 32));
         Vector2d newPositionA, newPositionB;
-        out.println(this.position);
-        out.println(this.toString());
-        out.println(randomNum);
+//        out.println(this.position);
+//        out.println(this.toString());
+//        out.println(randomNum);
         switch (randomNum) {
             case 0 -> {
                 newPositionA = this.position.add(dirToVec[this.orientation]);
-                out.println(newPositionA);
+//                out.println(newPositionA);
                 if (!this.map.getBorders()){
                     newPositionA.correctCords(this.map.getWidth(), this.map.getHeight());
                 }
-                out.println(newPositionA);
+//                out.println(newPositionA);
                 if (this.map.canMoveTo(newPositionA)) {
                     this.energy -= this.map.energyLoss;
                     this.positionChanged(this.position, newPositionA);

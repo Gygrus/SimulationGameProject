@@ -9,5 +9,7 @@ public abstract class MapObject {
 
     abstract public String getInputStream();
 
-    public String getLabel() { return this.position.toString(); }
+    public String getLabel() {
+        return this.position.toString();
+    }
 }

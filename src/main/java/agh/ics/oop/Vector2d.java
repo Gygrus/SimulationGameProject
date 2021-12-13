@@ -19,8 +19,8 @@ public class Vector2d {
     }
 
     public void correctCords(int width, int height){
-        this.x = (this.x+width)%(width);
-        this.y = (this.y+height)%(height);
+        this.x = (this.x+width+1)%(width+1);
+        this.y = (this.y+height+1)%(height+1);
     }
 
     public void setCords(int newX, int newY){

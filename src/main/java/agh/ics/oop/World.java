@@ -1,5 +1,7 @@
 package agh.ics.oop;
 //import agh.ics.oop.gui.App;
+import agh.ics.oop.gui.App;
+import com.sun.source.tree.Tree;
 import javafx.application.Application;
 
 import java.util.ArrayList;
@@ -23,34 +25,20 @@ public class World {
 //        } catch (IllegalArgumentException ex) {
 //            out.println(ex);
 //        }
-        AbstractWorldMap mapa = new GrassField(5, 5, 5, 0.1F, false, 10);
+//        AbstractWorldMap mapa = new GrassField(5, 10, 10, 0.4F, false, 3, 15);
 //        Animal test1 = new Animal(mapa, new Vector2d(0, 0), new ArrayList<Integer>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)), 50, 0);
 //        Animal test2 = new Animal(mapa, new Vector2d(0, 1), new ArrayList<Integer>(Arrays.asList(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4)), 50, 0);
-        SimulationEngine engine = new SimulationEngine(mapa, 20, 24);
-        mapa.setEngineObserver(engine);
-
-//        HashMap<Vector2d, TreeSet<Animal>> testset = new HashMap<Vector2d, TreeSet<Animal>>;
-//        testset.put(test1.getPosition(), test1);
-
-        out.println(mapa.jungleUpperRight);
-        out.println(mapa.jungleLowerLeft);
-        out.println(mapa.getAnimals());
-        out.println(mapa.getAnimals());
-//        out.println(mapa.getAnimals());
-//        out.println(mapa.objectAt(new Vector2d(0, 1)));
-//        out.println(mapa.getStrongest(mapa.objectAt(new Vector2d(0, 1))));
-
-        out.println(mapa.getAnimals());
-        engine.run();
-        out.println(mapa.getAnimals());
-        engine.run();
-        out.println(mapa.getAnimals());
-        mapa.reproduce();
-        out.println(mapa.getBushes());
-        mapa.animalEat();
-        out.println(mapa.getBushes());
-        out.println(mapa.getAnimals());
-//        out.println(mapa.getStrongest(mapa.getAnimals().get(new Vector2d(1, 0))));
+//        SimulationEngine engine = new SimulationEngine(mapa, 70, 100);
+//        mapa.setEngineObserver(engine);
+//        TreeSet<Integer> test = new TreeSet<Integer>();
+//        test.add(0);
+//        test.add(2);
+//        test.add(3);
+//        test.add(5);
+//        while (test.last() > 1){
+//            test.pollLast();
+//        }
+        Application.launch(App.class);
     }
 
 
