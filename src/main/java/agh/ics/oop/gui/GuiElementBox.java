@@ -1,9 +1,11 @@
 package agh.ics.oop.gui;
 import agh.ics.oop.MapObject;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
 import static java.lang.System.out;
@@ -46,6 +48,14 @@ public class GuiElementBox {
         newView.setFitWidth(20);
         VBox vBox = new VBox(newView, text);
         vBox.setAlignment(Pos.CENTER);
+
+        EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+                System.out.println("Hello World");
+            }
+        };
+        vBox.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
         return vBox;
     }
 

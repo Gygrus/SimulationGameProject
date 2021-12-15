@@ -55,7 +55,7 @@ public class Animal extends MapObject implements GlobalValues {
 
     @Override
     public String getLabel(){
-        return this.position.toString() + this.energy + ' ' + this.map.getAnimals().get(this.position).size();
+        return this.position.toString() + this.energy;
     }
 
     public int getChildren() { return this.numOfChildren; }

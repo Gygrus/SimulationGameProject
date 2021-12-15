@@ -19,7 +19,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public Vector2d jungleUpperRight;
     public Vector2d lowerLeft;
     public Vector2d upperRight;
-    public int numOfDead = 0;
     public int numOfBushes = 0;
     public HashMap<Vector2d, TreeSet<Animal>> animals = new HashMap<Vector2d, TreeSet<Animal>>();
     public HashMap<Vector2d, Grass> bushes = new HashMap<Vector2d, Grass>();
@@ -157,8 +156,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             newList.add(animal);
             Integer val = this.engineObserver.allGenes.get(animal.getGenes());
             this.engineObserver.allGenes.put(animal.getGenes(), val == null ? 1 : val + 1);
-            out.println(this.engineObserver.allGenes);
-            out.println(animal.getGenes());
+            this.engineObserver.addAnimal(animal);
             this.animals.put(animal.getPosition(), newList);
             return true;
         }
@@ -285,6 +283,4 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
             }
         }
     }
-
-
 }

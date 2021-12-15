@@ -3,6 +3,8 @@ package agh.ics.oop;
 //import agh.ics.oop.gui.App;
 
 import agh.ics.oop.gui.App;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -12,19 +14,23 @@ import static java.lang.System.out;
 import static java.util.Collections.sort;
 
 public class SimulationEngine implements IEngine, Runnable {
+    private boolean running = true;
+    private int numOfLiving = 0;
     public int globalCount = 0;
     public ArrayList<Integer> deadLifeSpan = new ArrayList<Integer>();
     public HashMap<ArrayList<Integer>, Integer> allGenes = new HashMap<ArrayList<Integer>, Integer>();
-    protected int numOfDead = 0;
-    protected int numOfBushes = 0;
     private MoveDirection[] directions;
     private AbstractWorldMap map;
     private List<Animal> animals = new ArrayList<>();
     private App guiObserver;
     public int initialEnergy;
     private ArrayList<Animal> deadAnimals = new ArrayList<>();
+    private GridPane gridpane;
+    private VBox gridData;
 
-    public SimulationEngine(AbstractWorldMap map, int startingNumber, int energy) {
+    public SimulationEngine(AbstractWorldMap map, int startingNumber, int energy, GridPane gridpane, VBox gridData) {
+        this.gridData = gridData;
+        this.gridpane = gridpane;
         this.initialEnergy = energy;
         this.map = map;
         this.map.setEngineObserver(this);
@@ -42,13 +48,14 @@ public class SimulationEngine implements IEngine, Runnable {
             Animal toAdd = new Animal(this.map, newPosition, genes, this.initialEnergy, 0, this.globalCount);
             this.globalCount += 1;
             this.map.place(toAdd);
-            this.animals.add(toAdd);
         }
     }
 
     public void addDeadLifeSpan(int span){
         this.deadLifeSpan.add(span);
     }
+
+    public int getNumOfLiving() { return this.numOfLiving; }
 
     public double getAverageDeadLifeSpan(){
         if (this.deadLifeSpan.isEmpty()){return 0;}
@@ -64,6 +71,9 @@ public class SimulationEngine implements IEngine, Runnable {
         for (Animal animal : this.animals){
             sum += animal.getEnergy();
         }
+        if (this.animals.size() == 0){
+            return 0;
+        }
         return sum/this.animals.size();
     }
 
@@ -71,6 +81,9 @@ public class SimulationEngine implements IEngine, Runnable {
         double sum = 0;
         for (Animal animal : this.animals){
             sum += animal.getChildren();
+        }
+        if (this.animals.size() == 0){
+            return 0;
         }
         return sum/this.animals.size();
     }
@@ -85,10 +98,14 @@ public class SimulationEngine implements IEngine, Runnable {
                 max = this.allGenes.get(genes);
             }
         }
+        if (output == null){
+            return null;
+        }
         return output.toString() + " " + max;
     }
 
     public void addAnimal(Animal animal) {
+        this.numOfLiving += 1;
         this.animals.add(animal);
     }
 
@@ -107,17 +124,12 @@ public class SimulationEngine implements IEngine, Runnable {
         if (this.allGenes.get(genesToRemove) <= 0){
             this.allGenes.remove(genesToRemove);
         }
+        this.numOfLiving -= 1;
         this.animals.remove(animal);
     }
 
-    public void addDeadAnimals(Animal animal) {
-        this.deadAnimals.add(animal);
-        this.numOfDead += 1;
-    }
 
-    public void sendPositions(App observer) {
 
-    }
 
     public void addGuiObserver(App observer){
         this.guiObserver = observer;
@@ -137,35 +149,45 @@ public class SimulationEngine implements IEngine, Runnable {
         return output;
     }
 
-    public void setDirections(MoveDirection[] directions) {this.directions = directions;}
-
     public void guiUpdate() {
-        AbstractWorldMap newMap = this.map;
-        this.guiObserver.guiUpdate(getAllVisible(), newMap);
+        this.guiObserver.guiUpdate(getAllVisible(), this.map, this, this.gridpane, this.gridData);
     }
 
     public List<Animal> getAnimals() { return this.animals;}
 
-    public void run(){
-        while (true) {
-            this.map.deleteBodies();
-            for (Animal animal : this.getAnimals()) {
-                animal.move();
-            }
-            this.map.animalEat();
-            this.map.reproduce();
-            this.map.addBushes();
-            guiUpdate();
+    public void switchRunning() {
+        this.running = !this.running;
+//        if (!this.running){
 //            try {
-//                Thread.sleep(300);
-//            } catch (InterruptedException ex) {
+//                this.wait();
+//            } catch (InterruptedException ex){
 //                out.println(ex);
 //            }
-//            out.println(this.getAnimals());
-//            out.println(this.map.getAnimals());
-            out.println(this.map.getNumOfAnimals() == this.getAnimals().size());
-//            out.println(this.getAnimals().size());
-//            out.println(this.map.bushes);
+//        }
+    }
+
+    public boolean getRunning() {
+        return this.running;
+    }
+
+    public void run(){
+        while (true) {
+            if (this.running) {
+                this.map.deleteBodies();
+                for (Animal animal : this.getAnimals()) {
+                    animal.move();
+                }
+                this.map.animalEat();
+                this.map.reproduce();
+                this.map.addBushes();
+                guiUpdate();
+                continue;
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                return;
+            }
 
         }
     }
