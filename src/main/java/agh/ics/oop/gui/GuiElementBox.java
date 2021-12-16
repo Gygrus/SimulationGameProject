@@ -1,4 +1,5 @@
 package agh.ics.oop.gui;
+import agh.ics.oop.Animal;
 import agh.ics.oop.MapObject;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -13,11 +14,16 @@ import static java.lang.System.out;
 import java.io.FileInputStream;
 
 public class GuiElementBox {
+    public App appObserver;
     Image upImage;
     Image downImage;
     Image leftImage;
     Image rightImage;
     Image grassImage;
+
+    public void setAppObserver(App observer){
+        this.appObserver = observer;
+    }
 
 
     public GuiElementBox(){
@@ -52,11 +58,20 @@ public class GuiElementBox {
         EventHandler<MouseEvent> eventHandler = new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent e) {
+                if (object instanceof Animal){
+                    Animal animal = (Animal) object;
+                    sendAnimal(animal);
+                    System.out.println("dupa");
+                }
                 System.out.println("Hello World");
             }
         };
         vBox.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
         return vBox;
+    }
+
+    public void sendAnimal(Animal animal){
+        this.appObserver.setTrackedAnimal(animal);
     }
 
 

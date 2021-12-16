@@ -28,39 +28,57 @@ import static java.lang.System.out;
 
 public class App extends Application {
     private AbstractWorldMap map1, map2;
-    private GridPane gridpane1 = new GridPane();
-    private GridPane gridpane2 = new GridPane();
-    private VBox gridData1 = new VBox();
-    private VBox gridData2 = new VBox();
-    private VBox animalDetails1 = new VBox();
-    private VBox animalDetails2 = new VBox();
-    private GuiElementBox vBoxGenerator = new GuiElementBox();
-    private int moveDelay = 60;
-    private int numOfAnimals = 10;
+    private final GridPane gridpane1 = new GridPane();
+    private final GridPane gridpane2 = new GridPane();
+    private final VBox gridData1 = new VBox();
+    private final VBox gridData2 = new VBox();
+    private final VBox animalDetails1 = new VBox();
+    private final VBox animalDetails2 = new VBox();
+    private final Button showGenes = new Button("Show animals with most common genes for borderless");
+    private final Button showGenes2 = new Button("Show animals with most common genes for borders");
+    private Animal trackedAnimal1 = null;
+    private Animal trackedAnimal2 = null;
+    private final GuiElementBox vBoxGenerator = new GuiElementBox();
+    private final int moveDelay = 60;
+    private final int numOfAnimals = 10;
     private Scene scene;
     private Thread curThread1, curThread2;
     private SimulationEngine engine1, engine2;
-    private LineChart<String, Number> dataChart1 = new LineChart<String, Number>(new CategoryAxis(), new NumberAxis());
-    private LineChart<String, Number> dataChart2 = new LineChart<String, Number>(new CategoryAxis(), new NumberAxis());
+    private final LineChart<String, Number> dataChart1 = new LineChart<String, Number>(new CategoryAxis(), new NumberAxis());
+    private final LineChart<String, Number> dataChart2 = new LineChart<String, Number>(new CategoryAxis(), new NumberAxis());
     ScheduledExecutorService scheduledExecutorService2 = Executors.newSingleThreadScheduledExecutor();
     ScheduledExecutorService scheduledExecutorService1 = Executors.newSingleThreadScheduledExecutor();
 
     @Override
     public void init() {
+        this.vBoxGenerator.setAppObserver(this);
         this.map1 = new GrassField(10, 10, 10, 0.3F, false, 1, 50);
         this.map2 = new GrassField(10, 10, 10, 0.4F, true, 1, 50);
 
-        this.engine1 = new SimulationEngine(this.map1, 10, 4000, this.gridpane1, this.gridData1);
+        this.engine1 = new SimulationEngine(this.map1, 10, 40, this.gridpane1, this.gridData1);
         this.engine1.addGuiObserver(this);
         this.curThread1 = new Thread(this.engine1);
         this.curThread1.setDaemon(true);
 
-        this.engine2 = new SimulationEngine(this.map2, 100, 4000, this.gridpane2, this.gridData2);
+        this.engine2 = new SimulationEngine(this.map2, 10, 40, this.gridpane2, this.gridData2);
         this.engine2.addGuiObserver(this);
         this.curThread2 = new Thread(this.engine2);
         this.curThread2.setDaemon(true);
         this.curThread1.start();
         this.curThread2.start();
+    }
+
+    public void setTrackedAnimal(Animal animal){
+        animal.setTrackedAnimal(animal);
+        animal.getMap().setTrackedAnimal(animal);
+        if (animal.getMap() == this.map1){
+            this.trackedAnimal1 = animal;
+            this.displayDetails();
+            out.println("sett");
+        } else {
+            this.trackedAnimal2 = animal;
+            this.displayDetails();
+        }
     }
 
 
@@ -70,6 +88,7 @@ public class App extends Application {
             gridpane.getChildren().clear();
             gridpane.getColumnConstraints().clear();
             gridpane.getRowConstraints().clear();
+            displayDetails();
             createGridPane(objects, newMap, gridpane);
             fillData(engine, newMap, gridData);
         });
@@ -80,13 +99,41 @@ public class App extends Application {
         }
     }
 
+    public void displayDetails(){
+        if (this.trackedAnimal1 != null){
+            this.animalDetails1.getChildren().clear();
+            Label info = new Label("Animal map: Borderless, " + "Animal tracked energy: " + this.trackedAnimal1.getEnergy());
+            Label genes = new Label("Genom: " + this.trackedAnimal1.getGenes());
+            Label children = new Label("Number of children: " + this.trackedAnimal1.getChildren());
+            Label descendants = new Label("Number of descendants: " + this.trackedAnimal1.getDescendantsNumber());
+            Label death = new Label("Year of death: " + this.trackedAnimal1.death);
+            this.animalDetails1.getChildren().addAll(info, genes, children, descendants);
+            if (this.trackedAnimal1.death > 0){
+                this.animalDetails1.getChildren().add(death);
+            }
+        }
+        if (this.trackedAnimal2 != null){
+            this.animalDetails2.getChildren().clear();
+            Label info = new Label("Animal map: Borders, " + "Animal tracked energy: " + this.trackedAnimal2.getEnergy());
+            Label genes = new Label("Genom: " + this.trackedAnimal2.getGenes());
+            Label children = new Label("Number of children: " + this.trackedAnimal2.getChildren());
+            Label descendants = new Label("Number of descendants: " + this.trackedAnimal2.getDescendantsNumber());
+            Label death = new Label("Year of death: " + this.trackedAnimal2.death);
+            this.animalDetails2.getChildren().addAll(info, genes, children, descendants);
+            if (this.trackedAnimal2.death > 0){
+                this.animalDetails2.getChildren().add(death);
+            }
+
+        }
+    }
+
 
 
     private void fillData(SimulationEngine engine, AbstractWorldMap newMap, VBox gridData) {
         gridData.getChildren().clear();
         Label living = new Label("Number of animals: " + engine.getNumOfLiving());
         Label bushes = new Label("Number of grass: " + newMap.numOfBushes);
-        Label genes = new Label("Dominating genes: " + engine.getMostCommonGenes());
+        Label genes = new Label("Dominating genes: " + engine.getMostCommonGenes().toString());
         Label avEnergy = new Label("Average energy: " + engine.getAverageEnergy());
         Label avSpan = new Label("Average lifespan for dead: " + engine.getAverageDeadLifeSpan());
         Label avChildren = new Label("Average number of children: " + engine.getAverageChildren());
@@ -196,9 +243,13 @@ public class App extends Application {
         Button pauseButton2 = new Button("Pause/Resume");
         pauseButton1.setOnAction(e -> {
             this.engine1.switchRunning();
+            this.displayDetails();
+            this.showGenes.setVisible(!this.engine1.getRunning());
         });
         pauseButton2.setOnAction(e -> {
             this.engine2.switchRunning();
+            this.displayDetails();
+            this.showGenes2.setVisible(!this.engine2.getRunning());
         });
         HBox buttons = new HBox();
         buttons.getChildren().addAll(pauseButton1, pauseButton2);
@@ -208,7 +259,9 @@ public class App extends Application {
     }
 
     public void start(Stage primaryStage){
-//        createGridPane(this.map1);
+        this.gridpane1.setAlignment(Pos.CENTER);
+        this.gridpane2.setAlignment(Pos.CENTER);
+
         createDataPopulationChart(this.dataChart1, this.map1, this.scheduledExecutorService1, this.engine1);
         createDataPopulationChart(this.dataChart2, this.map2, this.scheduledExecutorService2, this.engine2);
         BorderPane mainPane = new BorderPane();
@@ -227,7 +280,37 @@ public class App extends Application {
         mainPane.setRight(layoutSecond);
         this.createPauseButton(mainPane);
 
+        VBox animDetails = new VBox();
+        this.animalDetails1.setAlignment(Pos.CENTER);
+        this.animalDetails1.setSpacing(10);
 
+
+        this.showGenes.setOnAction(e -> {
+            this.gridpane1.setGridLinesVisible(false);
+            this.gridpane1.getChildren().clear();
+            this.gridpane1.getColumnConstraints().clear();
+            this.gridpane1.getRowConstraints().clear();
+            this.createGridPane(this.engine1.getAllWithGenes(this.engine1.getMostCommonGenes()), this.map1, this.gridpane1);
+        });
+
+        this.animalDetails2.setAlignment(Pos.CENTER);
+        this.animalDetails2.setSpacing(10);
+
+        this.showGenes2.setOnAction(e -> {
+            this.gridpane2.setGridLinesVisible(false);
+            this.gridpane2.getChildren().clear();
+            this.gridpane2.getColumnConstraints().clear();
+            this.gridpane2.getRowConstraints().clear();
+            this.createGridPane(this.engine2.getAllWithGenes(this.engine2.getMostCommonGenes()), this.map2, this.gridpane2);
+        });
+
+        showGenes.setVisible(!this.engine1.getRunning());
+        showGenes2.setVisible(!this.engine2.getRunning());
+
+        animDetails.getChildren().addAll(this.animalDetails1, this.animalDetails2, showGenes, showGenes2);
+        animDetails.setAlignment(Pos.CENTER);
+        animDetails.setSpacing(20);
+        mainPane.setCenter(animDetails);
 
         Scene scene = new Scene(mainPane, 1400, 800);
         primaryStage.setScene(scene);

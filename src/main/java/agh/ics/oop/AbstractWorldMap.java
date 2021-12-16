@@ -6,6 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static java.lang.System.out;
 
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver, GlobalValues {
+    private Animal trackedAnimal;
     public int energyLoss;
     public int currentGen = 0;
     public ArrayList<Vector2d> bushesSavanna = new ArrayList<Vector2d>();
@@ -40,6 +41,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         }
         return sum;
     }
+
+    public void setTrackedAnimal(Animal animal) { this.trackedAnimal = animal; }
 
     public boolean getBorders() { return this.borders; }
 
@@ -103,6 +106,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         this.currentGen += 1;
         for (Vector2d position: this.animals.keySet()){
             while (!this.animals.get(position).isEmpty() && this.animals.get(position).last().getEnergy() <= 0){
+                this.animals.get(position).last().death = currentGen;
                 this.engineObserver.addDeadLifeSpan(this.currentGen - this.animals.get(position).last().birth);
                 this.engineObserver.deleteAnimal(this.animals.get(position).last());
                 Animal obj = this.animals.get(position).pollLast();
@@ -277,6 +281,11 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                     pair.get(0).numOfChildren += 1;
                     pair.get(1).numOfChildren += 1;
                     Animal newChild = new Animal(this, pair.get(0).getPosition(), newGenes, energy, this.currentGen, this.engineObserver.globalCount);
+
+                    if (this.trackedAnimal != null && (pair.get(0).getTrackedAnimal() == this.trackedAnimal || pair.get(1).getTrackedAnimal() == this.trackedAnimal)){
+                        newChild.setTrackedAnimal(this.trackedAnimal);
+                        this.trackedAnimal.addDescendant();
+                    }
                     this.engineObserver.globalCount += 1;
                     this.placeNewChild(newChild);
                 }

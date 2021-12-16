@@ -88,7 +88,7 @@ public class SimulationEngine implements IEngine, Runnable {
         return sum/this.animals.size();
     }
 
-    public String getMostCommonGenes(){
+    public ArrayList<Integer> getMostCommonGenes(){
         int max = 0;
         ArrayList<Integer> output = null;
 
@@ -101,7 +101,7 @@ public class SimulationEngine implements IEngine, Runnable {
         if (output == null){
             return null;
         }
-        return output.toString() + " " + max;
+        return output;
     }
 
     public void addAnimal(Animal animal) {
@@ -129,8 +129,6 @@ public class SimulationEngine implements IEngine, Runnable {
     }
 
 
-
-
     public void addGuiObserver(App observer){
         this.guiObserver = observer;
     }
@@ -139,6 +137,25 @@ public class SimulationEngine implements IEngine, Runnable {
         ArrayList<MapObject> output = new ArrayList<MapObject>();
         for (TreeSet<Animal> animals : this.map.getAnimals().values()){
             output.add(animals.first());
+        }
+
+        for (Grass bush : this.map.getBushes().values()){
+            if (!this.map.getAnimals().containsKey(bush.getPosition())){
+                output.add(bush);
+            }
+        }
+        return output;
+    }
+
+    public ArrayList<MapObject> getAllWithGenes(ArrayList<Integer> genes){
+        ArrayList<MapObject> output = new ArrayList<MapObject>();
+        for (TreeSet<Animal> animals : this.map.getAnimals().values()){
+            for (Animal animal : animals){
+                if (animal.getGenes().equals(genes)){
+                    output.add(animal);
+                    break;
+                }
+            }
         }
 
         for (Grass bush : this.map.getBushes().values()){

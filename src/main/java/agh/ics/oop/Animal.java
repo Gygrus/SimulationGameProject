@@ -7,6 +7,8 @@ import java.util.List;
 import static java.lang.System.out;
 
 public class Animal extends MapObject implements GlobalValues {
+    private Animal trackedAnimal;
+    private int descendantsNumber = 0;
     public int id;
     public int numOfChildren = 0;
     public int birth, death;
@@ -20,6 +22,7 @@ public class Animal extends MapObject implements GlobalValues {
     public Animal(AbstractWorldMap map, Vector2d initialPosition, ArrayList<Integer> genes, int energy, int birth, int id) {
         this.id = id;
         this.birth = birth;
+        this.death = 0;
         this.energy = energy;
         this.genes = genes;
         this.map = map;
@@ -38,13 +41,7 @@ public class Animal extends MapObject implements GlobalValues {
         };
     }
 
-//    @Override
-//    public boolean equals(Animal o){
-//        if ((this == o) || (this.id == o.id)){
-//            return true;
-//        }
-//        return false;
-//    }
+    public AbstractWorldMap getMap(){ return this.map; }
 
     @Override
     public int hashCode() {
@@ -57,6 +54,17 @@ public class Animal extends MapObject implements GlobalValues {
     public String getLabel(){
         return this.position.toString() + this.energy;
     }
+
+    public int getDescendantsNumber() { return this.descendantsNumber; }
+
+    public void addDescendant() {this.descendantsNumber += 1;}
+
+    public void setTrackedAnimal(Animal animal){
+        this.trackedAnimal = animal;
+        this.numOfChildren = 0;
+    }
+
+    public Animal getTrackedAnimal() { return this.trackedAnimal; }
 
     public int getChildren() { return this.numOfChildren; }
 
