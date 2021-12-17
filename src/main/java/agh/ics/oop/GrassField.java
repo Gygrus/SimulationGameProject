@@ -26,11 +26,12 @@ public class GrassField extends AbstractWorldMap {
     }
 
     private void setJunglePositions(float jungleRatio) {
-        int area = (int) (jungleRatio* (float) (this.width*this.height));
+        int area = (int) ((float) (this.width*this.height)/((float) 1+((float) 1/jungleRatio)));
         int divider = 1;
         while (divider < 2 && area >= 4){
             for (int i = (int) Math.sqrt(area); i >= 2; i--){
-                if (area%i == 0 && (Math.max(area/i, i) <= Math.max(this.width, this.height)) && (Math.min(area/i, i) <= Math.min(this.width, this.height))){
+                if (area%i == 0 && (Math.max(area/i, i) <= Math.max(this.width, this.height)) && (Math.min(area/i, i)
+                        <= Math.min(this.width, this.height))){
                     divider = i;
                     break;
                 }

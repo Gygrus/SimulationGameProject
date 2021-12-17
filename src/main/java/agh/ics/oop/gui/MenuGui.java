@@ -52,8 +52,9 @@ public class MenuGui {
         Button submit = generateSubmitButton();
         mainPanel.setAlignment(Pos.CENTER);
         mainPanel.getChildren().addAll(mainTitle, container, submit);
+        mainPanel.setSpacing(10);
 
-        Scene menuScene = new Scene(mainPanel, 600, 350);
+        Scene menuScene = new Scene(mainPanel, 700, 400);
         return menuScene;
     }
 

@@ -176,7 +176,7 @@ public class App extends Application {
         } else if (size <= 2500){
             return 60;
         } else {
-            return 120;
+            return 100;
         }
     }
 
