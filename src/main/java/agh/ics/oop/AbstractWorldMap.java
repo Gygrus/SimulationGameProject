@@ -74,24 +74,24 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     protected void addBushes() {
-//        List<Vector2d> availablePosJungle = new ArrayList<>(this.bushesJungle);
-//        for (Vector2d pos: this.animals.keySet()){
-//            availablePosJungle.remove(pos);
-//        }
-        if (!this.bushesJungle.isEmpty()) {
-            Vector2d newPos1 = this.bushesJungle.get(ThreadLocalRandom.current().nextInt(0, this.bushesJungle.size()));
+        List<Vector2d> availablePosJungle = new ArrayList<>(this.bushesJungle);
+        for (Vector2d pos: this.animals.keySet()){
+            availablePosJungle.remove(pos);
+        }
+        if (!availablePosJungle.isEmpty()) {
+            Vector2d newPos1 = availablePosJungle.get(ThreadLocalRandom.current().nextInt(0, availablePosJungle.size()));
             Grass bushJungle = new Grass(newPos1);
             this.bushesJungle.remove(newPos1);
             this.bushesAll.remove(newPos1);
             this.bushes.put(newPos1, bushJungle);
             this.numOfBushes += 1;
         }
-//        List<Vector2d> availablePosSavanna = new ArrayList<>(this.bushesSavanna);
-//        for (Vector2d pos: this.animals.keySet()){
-//            availablePosSavanna.remove(pos);
-//        }
-        if (!this.bushesSavanna.isEmpty()) {
-            Vector2d newPos2 = this.bushesSavanna.get(ThreadLocalRandom.current().nextInt(0, this.bushesSavanna.size()));
+        List<Vector2d> availablePosSavanna = new ArrayList<>(this.bushesSavanna);
+        for (Vector2d pos: this.animals.keySet()){
+            availablePosSavanna.remove(pos);
+        }
+        if (!availablePosSavanna.isEmpty()) {
+            Vector2d newPos2 = availablePosSavanna.get(ThreadLocalRandom.current().nextInt(0, availablePosSavanna.size()));
             Grass bushSavanna = new Grass(newPos2);
             this.bushesSavanna.remove(newPos2);
             this.bushesAll.remove(newPos2);

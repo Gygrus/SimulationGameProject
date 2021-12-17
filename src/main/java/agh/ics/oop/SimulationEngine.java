@@ -41,6 +41,8 @@ public class SimulationEngine implements IEngine, Runnable {
         this.spawnAnimals(startingNumber);
     }
 
+    public int getMoveDelay() { return this.moveDelay; }
+
     public HashMap<ArrayList<Integer>, Integer> getAllGenes() { return this.allGenes; }
 
     public int getGlobalCount() { return this.globalCount; }
@@ -224,7 +226,6 @@ public class SimulationEngine implements IEngine, Runnable {
     }
 
     public void run(){
-        int currentDelay = this.moveDelay;
         while (true) {
             if (this.running) {
                 this.sendStatisticsData();
@@ -232,6 +233,7 @@ public class SimulationEngine implements IEngine, Runnable {
                 this.map.deleteBodies();
                 if (this.map.getIsMagic() && this.map.getMagicCount() > 0 && this.animals.size() == 5){
                     this.spawnAnimals(5);
+                    this.map.setMagicCount(this.map.getMagicCount()-1);
                     this.guiObserver.magicConditionInfo(this);
                 }
                 long postDelete = System.nanoTime();
@@ -251,17 +253,8 @@ public class SimulationEngine implements IEngine, Runnable {
                 long postBushes = System.nanoTime();
                 out.println("Krzaki: "+(postBushes-postCopulate)/1000000);
                 guiUpdate();
-//                long postUpdate = System.nanoTime();
-//                out.println("GUI: "+(postUpdate-postBushes)/1000000);
-                if (this.map.getBushes().size() > 500 && this.moveDelay < 40){
-                    currentDelay = this.moveDelay + 50;
-                } else if (this.map.getBushes().size() > 2000 && this.moveDelay <= 200){
-                    currentDelay = this.moveDelay + 300;
-                } else {
-                    currentDelay = this.moveDelay;
-                }
                 try {
-                    Thread.sleep(currentDelay);
+                    Thread.sleep(this.moveDelay);
                 } catch (InterruptedException ex){
                     out.println(ex);
                 }

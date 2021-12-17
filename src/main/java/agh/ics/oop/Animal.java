@@ -108,17 +108,12 @@ public class Animal extends MapObject implements GlobalValues {
     public void move() {
         int randomNum = this.genes.get(ThreadLocalRandom.current().nextInt(0, 32));
         Vector2d newPositionA, newPositionB;
-//        out.println(this.position);
-//        out.println(this.toString());
-//        out.println(randomNum);
         switch (randomNum) {
             case 0 -> {
                 newPositionA = this.position.add(dirToVec[this.orientation]);
-//                out.println(newPositionA);
                 if (!this.map.getBorders()){
                     newPositionA.correctCords(this.map.getWidth(), this.map.getHeight());
                 }
-//                out.println(newPositionA);
                 if (this.map.canMoveTo(newPositionA)) {
                     this.energy -= this.map.energyLoss;
                     this.positionChanged(this.position, newPositionA);
