@@ -19,7 +19,7 @@ public class Animal extends MapObject implements GlobalValues {
     private List<IPositionChangeObserver> observerList = new ArrayList<>();
 
 
-    public Animal(AbstractWorldMap map, Vector2d initialPosition, ArrayList<Integer> genes, int energy, int birth, int id) {
+    public Animal(AbstractWorldMap map, Vector2d initialPosition, ArrayList<Integer> genes, int energy, int birth) {
         this.id = id;
         this.birth = birth;
         this.death = 0;

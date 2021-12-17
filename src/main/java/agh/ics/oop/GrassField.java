@@ -6,7 +6,8 @@ import static java.lang.System.out;
 
 public class GrassField extends AbstractWorldMap {
     private final int initialNumOfBushes;
-    public GrassField(int n, int width, int height, float jungleRatio, boolean borders, int energyLoss, int bushEnergy) {
+    public GrassField(int n, int width, int height, float jungleRatio, boolean borders, int energyLoss, int bushEnergy, boolean isMagic) {
+        this.isMagic = isMagic;
         this.bushEnergy = bushEnergy;
         this.energyLoss = energyLoss;
         this.initialNumOfBushes = n;
@@ -36,7 +37,7 @@ public class GrassField extends AbstractWorldMap {
             }
             area -= 1;
         }
-//        out.println(divider);
+
         area += 1;
         int jWidth = divider;
         int jHeight = area/divider;
