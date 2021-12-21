@@ -18,9 +18,6 @@ public class GrassField extends AbstractWorldMap {
         this.height = height;
         setJunglePositions(jungleRatio);
         generateBushesPosition();
-//        out.println(this.bushesJungle);
-//        out.println(this.bushesSavanna);
-//        out.println(this.bushesAll);
         generateInitialBushes();
 
     }

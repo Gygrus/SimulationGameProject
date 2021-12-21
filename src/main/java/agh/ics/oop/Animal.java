@@ -1,4 +1,5 @@
 package agh.ics.oop;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ public class Animal extends MapObject implements GlobalValues {
     private Animal trackedAnimal;
     private int descendantsNumber = 0;
     public int id;
-    public int numOfChildren = 0;
+    private int numOfChildren = 0;
     public int birth, death;
     private int energy;
     private ArrayList<Integer> genes;
@@ -20,7 +21,6 @@ public class Animal extends MapObject implements GlobalValues {
 
 
     public Animal(AbstractWorldMap map, Vector2d initialPosition, ArrayList<Integer> genes, int energy, int birth) {
-        this.id = id;
         this.birth = birth;
         this.death = 0;
         this.energy = energy;
@@ -68,6 +68,8 @@ public class Animal extends MapObject implements GlobalValues {
 
     public int getChildren() { return this.numOfChildren; }
 
+    private void addChildren() { this.numOfChildren = this.numOfChildren + 1; }
+
     public int getEnergy() { return this.energy; }
 
     public void changeEnergy(int value) { this.energy = this.energy + value; }
@@ -86,6 +88,34 @@ public class Animal extends MapObject implements GlobalValues {
         }
     }
 
+    public Animal createNewLife(Animal partner, int currentGen){
+        ArrayList<Integer> newGenes = new ArrayList<Integer>();
+        int sum = this.getEnergy() + partner.getEnergy();
+        if (ThreadLocalRandom.current().nextInt(0, 2) == 1){
+            for (int i = 0; i < 32; i++){
+                if (i < (partner.getEnergy()/sum)*32){
+                    newGenes.add(partner.getGenes().get(i));
+                } else {
+                    newGenes.add(this.genes.get(i));
+                }
+            }
+        } else {
+            for (int i = 0; i < 32; i++){
+                if (i < (this.energy/sum)*32){
+                    newGenes.add(this.genes.get(i));
+                } else {
+                    newGenes.add(partner.getGenes().get(i));
+                }
+            }
+        }
+        Collections.sort(newGenes);
+        int energy = this.energy/4 + partner.getEnergy()/4;
+        this.changeEnergy(-this.energy/4);
+        partner.changeEnergy(-partner.getEnergy()/4);
+        this.addChildren();
+        partner.addChildren();
+        return new Animal(this.map, this.position, newGenes, energy, currentGen);
+    }
 
     public String toString(){
         return switch (this.orientation) {
@@ -106,35 +136,32 @@ public class Animal extends MapObject implements GlobalValues {
     }
 
     public void move() {
-        int randomNum = this.genes.get(ThreadLocalRandom.current().nextInt(0, 32));
-        Vector2d newPositionA, newPositionB;
-        switch (randomNum) {
+        int randomGene = this.genes.get(ThreadLocalRandom.current().nextInt(0, 32));
+        Vector2d newPosition;
+        switch (randomGene) {
             case 0 -> {
-                newPositionA = this.position.add(dirToVec[this.orientation]);
-                if (!this.map.getBorders()){
-                    newPositionA.correctCords(this.map.getWidth(), this.map.getHeight());
-                }
-                if (this.map.canMoveTo(newPositionA)) {
-                    this.energy -= this.map.energyLoss;
-                    this.positionChanged(this.position, newPositionA);
-                    this.position = newPositionA;
-                }
+                newPosition = this.position.add(dirToVec[this.orientation]);
+                moveYourself(newPosition);
             }
             case 4 -> {
-                newPositionB = this.position.subtract(dirToVec[this.orientation]);
-                if (!this.map.getBorders()){
-                    newPositionB.correctCords(this.map.getWidth(), this.map.getHeight());
+                newPosition = this.position.subtract(dirToVec[this.orientation]);
+                moveYourself(newPosition);
                 }
-                if (this.map.canMoveTo(newPositionB)) {
-                    this.energy -= this.map.energyLoss;
-                    this.positionChanged(this.position, newPositionB);
-                    this.position = newPositionB;
-                }
-            }
             default -> {
                 this.energy -= this.map.energyLoss;
-                this.orientation = (this.orientation+randomNum)%8;
+                this.orientation = (this.orientation+randomGene)%8;
             }
+        }
+    }
+
+    private void moveYourself(Vector2d newPosition) {
+        if (!this.map.getBorders()){
+            newPosition.correctCords(this.map.getWidth(), this.map.getHeight());
+        }
+        if (this.map.canMoveTo(newPosition)) {
+            this.energy -= this.map.energyLoss;
+            this.positionChanged(this.position, newPosition);
+            this.position = newPosition;
         }
     }
 

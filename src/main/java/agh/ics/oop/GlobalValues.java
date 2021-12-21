@@ -3,7 +3,9 @@ package agh.ics.oop;
 import java.util.Comparator;
 
 public interface GlobalValues {
-    Vector2d[] dirToVec = {new Vector2d(0, 1), new Vector2d(1, 1), new Vector2d(1, 0), new Vector2d(1, -1), new Vector2d(0, -1), new Vector2d(-1, -1), new Vector2d(-1, 0), new Vector2d(-1, 1)};
+    Vector2d[] dirToVec = {new Vector2d(0, 1), new Vector2d(1, 1), new Vector2d(1, 0),
+            new Vector2d(1, -1), new Vector2d(0, -1), new Vector2d(-1, -1), new Vector2d(-1, 0),
+            new Vector2d(-1, 1)};
 
     Comparator<Animal> comparatorAnimal = new Comparator<Animal>() {
         @Override

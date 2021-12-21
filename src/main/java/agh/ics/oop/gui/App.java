@@ -178,19 +178,24 @@ public class App extends Application {
         } else {
             return 100;
         }
+//        return 20;
     }
 
     // start simulation and display scene with given constraints
     public void showSimulation(){
-        this.map1 = new GrassField(0, this.map1Width-1, this.map1Height-1, this.jungleRatio1, false, this.moveEnergy1, this.plantEnergy1, this.isMagic1);
-        this.map2 = new GrassField(0, this.map2Width-1, this.map2Height-1, this.jungleRatio2, true, this.moveEnergy2, this.plantEnergy2, this.isMagic2);
+        this.map1 = new GrassField(0, this.map1Width-1, this.map1Height-1, this.jungleRatio1,
+                false, this.moveEnergy1, this.plantEnergy1, this.isMagic1);
+        this.map2 = new GrassField(0, this.map2Width-1, this.map2Height-1, this.jungleRatio2,
+                true, this.moveEnergy2, this.plantEnergy2, this.isMagic2);
 
-        this.engine1 = new SimulationEngine(this.map1, this.animalNumber1, this.startEnergy1, this.gridpane1, this.gridData1, this.calculateMoveDelay(this.map1Width-1, this.map1Height-1));
+        this.engine1 = new SimulationEngine(this.map1, this.animalNumber1, this.startEnergy1, this.gridpane1,
+                this.gridData1, this.calculateMoveDelay(this.map1Width-1, this.map1Height-1));
         this.engine1.addGuiObserver(this);
         Thread curThread1 = new Thread(this.engine1);
         curThread1.setDaemon(true);
 
-        this.engine2 = new SimulationEngine(this.map2, this.animalNumber2, this.startEnergy2, this.gridpane2, this.gridData2, this.calculateMoveDelay(this.map2Width-1, this.map2Height-1));
+        this.engine2 = new SimulationEngine(this.map2, this.animalNumber2, this.startEnergy2, this.gridpane2,
+                this.gridData2, this.calculateMoveDelay(this.map2Width-1, this.map2Height-1));
         this.engine2.addGuiObserver(this);
         Thread curThread2 = new Thread(this.engine2);
         curThread2.setDaemon(true);

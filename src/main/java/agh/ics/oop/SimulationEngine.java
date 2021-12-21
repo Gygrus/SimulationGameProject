@@ -15,20 +15,19 @@ import static java.lang.System.out;
 import static java.util.Collections.sort;
 
 public class SimulationEngine implements IEngine, Runnable {
-    private int moveDelay;
+    private final int moveDelay;
     private boolean running = true;
     private int numOfLiving = 0;
     private int globalCount = 0;
-    private ArrayList<Integer> deadLifeSpan = new ArrayList<Integer>();
-    private HashMap<ArrayList<Integer>, Integer> allGenes = new HashMap<ArrayList<Integer>, Integer>();
-    private AbstractWorldMap map;
-    private List<Animal> animals = new ArrayList<>();
+    private final ArrayList<Integer> deadLifeSpan = new ArrayList<Integer>();
+    private final HashMap<ArrayList<Integer>, Integer> allGenes = new HashMap<ArrayList<Integer>, Integer>();
+    private final AbstractWorldMap map;
+    private final List<Animal> animals = new ArrayList<>();
     private App guiObserver;
     public int initialEnergy;
-    private ArrayList<Animal> deadAnimals = new ArrayList<>();
-    private GridPane gridpane;
-    private VBox gridData;
-    private DataStatistics dataManager;
+    private final GridPane gridpane;
+    private final VBox gridData;
+    private final DataStatistics dataManager;
 
     public SimulationEngine(AbstractWorldMap map, int startingNumber, int energy, GridPane gridpane, VBox gridData, int moveDelay){
         this.moveDelay = moveDelay;
@@ -44,10 +43,6 @@ public class SimulationEngine implements IEngine, Runnable {
     public int getMoveDelay() { return this.moveDelay; }
 
     public HashMap<ArrayList<Integer>, Integer> getAllGenes() { return this.allGenes; }
-
-    public int getGlobalCount() { return this.globalCount; }
-
-    public void addGlobalCount(int i) { this.globalCount += i; }
 
     private void spawnAnimals(int number){
         boolean check = false;
@@ -65,9 +60,12 @@ public class SimulationEngine implements IEngine, Runnable {
             }
 
             sort(genes);
-            Vector2d newPosition = new Vector2d(ThreadLocalRandom.current().nextInt(0, this.map.getWidth()+1), ThreadLocalRandom.current().nextInt(0, this.map.getHeight()+1));
+            Vector2d newPosition = new Vector2d(ThreadLocalRandom.current().nextInt(0, this.map.getWidth()+1),
+                    ThreadLocalRandom.current().nextInt(0, this.map.getHeight()+1));
+
             while (this.map.getAnimals().containsKey(newPosition) && this.map.getBushes().containsKey(newPosition)) {
-                newPosition.setCords(ThreadLocalRandom.current().nextInt(0, this.map.getWidth()+1), ThreadLocalRandom.current().nextInt(0, this.map.getHeight()+1));
+                newPosition.setCords(ThreadLocalRandom.current().nextInt(0, this.map.getWidth()+1),
+                        ThreadLocalRandom.current().nextInt(0, this.map.getHeight()+1));
             }
             Animal toAdd = new Animal(this.map, newPosition, genes, this.initialEnergy, globalCount);
             this.globalCount += 1;
@@ -123,7 +121,8 @@ public class SimulationEngine implements IEngine, Runnable {
     }
 
     private void sendStatisticsData() {
-        this.dataManager.addStatistics(this.getNumOfLiving(), this.map.getBushes().size(), this.updateAverageEnergy(), this.updateAverageDeadLifeSpan(), this.updateAverageChildren());
+        this.dataManager.addStatistics(this.getNumOfLiving(), this.map.getBushes().size(), this.updateAverageEnergy(),
+                this.updateAverageDeadLifeSpan(), this.updateAverageChildren());
     }
 
     public void writeDataToFile() {
@@ -157,13 +156,7 @@ public class SimulationEngine implements IEngine, Runnable {
     public void deleteAnimal(Animal animal){
         ArrayList<Integer> genesToRemove = animal.getGenes();
 
-        int sum = 0;
-        for (Animal animal1 : this.getAnimals()){
-            if (animal1.getGenes() == genesToRemove){
-                sum += 1;
-            }
-        }
-
+        // removing genes
         Integer val = this.allGenes.get(genesToRemove);
         this.allGenes.put(genesToRemove, val - 1);
         if (this.allGenes.get(genesToRemove) <= 0){
@@ -229,29 +222,18 @@ public class SimulationEngine implements IEngine, Runnable {
         while (true) {
             if (this.running) {
                 this.sendStatisticsData();
-                long startTime = System.nanoTime();
                 this.map.deleteBodies();
                 if (this.map.getIsMagic() && this.map.getMagicCount() > 0 && this.animals.size() == 5){
                     this.spawnAnimals(5);
                     this.map.setMagicCount(this.map.getMagicCount()-1);
                     this.guiObserver.magicConditionInfo(this);
                 }
-                long postDelete = System.nanoTime();
-                out.println("Usuwanie: "+(postDelete-startTime)/1000000);
                 for (Animal animal : this.getAnimals()) {
                     animal.move();
                 }
-                long postMove = System.nanoTime();
-                out.println("Poruszanie: "+(postMove-postDelete)/1000000);
                 this.map.animalEat();
-                long postEat = System.nanoTime();
-                out.println("Jedzenie: "+(postEat-postMove)/1000000);
                 this.map.reproduce();
-                long postCopulate = System.nanoTime();
-                out.println("Rozmnażanie: "+(postCopulate-postDelete)/1000000);
                 this.map.addBushes();
-                long postBushes = System.nanoTime();
-                out.println("Krzaki: "+(postBushes-postCopulate)/1000000);
                 guiUpdate();
                 try {
                     Thread.sleep(this.moveDelay);

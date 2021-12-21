@@ -171,9 +171,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         animal.addObserver(this);
         Integer val = this.engineObserver.getAllGenes().get(animal.getGenes());
         this.engineObserver.getAllGenes().put(animal.getGenes(), val == null ? 1 : val + 1);
-//        out.println(this.engineObserver.allGenes);
-//        out.println(animal.getGenes());
-//        this.newAnimals.add(animal);
         this.getAnimals().get(animal.getPosition()).add(animal);
         this.engineObserver.addAnimal(animal);
     }
@@ -224,8 +221,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     }
 
     public void animalEat(){
-        for (Vector2d position: this.bushes.keySet()){
-            if (this.animals.containsKey(position)){
+        for (Vector2d position: this.animals.keySet()){
+            if (this.bushes.containsKey(position)){
                 ArrayList<Animal> strongest = this.getStrongest(this.animals.get(position));
                 int len = strongest.size();
 
@@ -236,9 +233,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                 this.bushes.put(position, null);
                 this.numOfBushes -= 1;
 
-                if (position.getCordX() >= jungleLowerLeft.getCordX() && position.getCordX() <= jungleUpperRight.getCordX()
-                        && position.getCordY() >= jungleLowerLeft.getCordY()
-                        && position.getCordY() <= jungleUpperRight.getCordY()){
+                if (this.checkIfInJungle(position)){
                     this.bushesJungle.add(position);
                 } else {
                     this.bushesSavanna.add(position);
@@ -250,44 +245,29 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         this.bushes.keySet().removeIf(key -> this.bushes.get(key) == null);
     }
 
+    private boolean checkIfInJungle(Vector2d position){
+        return position.getCordX() >= jungleLowerLeft.getCordX() && position.getCordX() <= jungleUpperRight.getCordX()
+                && position.getCordY() >= jungleLowerLeft.getCordY()
+                && position.getCordY() <= jungleUpperRight.getCordY();
+    }
+
     public void reproduce(){
         for (TreeSet<Animal> neighbors: this.animals.values()){
             if (neighbors.size() >= 2){
                 ArrayList<Animal> pair = this.getPair(neighbors);
                 if (pair.size() >= 2){
-                    ArrayList<Integer> newGenes = new ArrayList<Integer>();
-                    int sum = pair.get(0).getEnergy() + pair.get(1).getEnergy();
-                    if (ThreadLocalRandom.current().nextInt(0, 2) == 1){
-                        for (int i = 0; i < 32; i++){
-                            if (i < (pair.get(1).getEnergy()/sum)*32){
-                                newGenes.add(pair.get(1).getGenes().get(i));
-                            } else {
-                                newGenes.add(pair.get(0).getGenes().get(i));
-                            }
-                        }
-                    } else {
-                        for (int i = 0; i < 32; i++){
-                            if (i < (pair.get(0).getEnergy()/sum)*32){
-                                newGenes.add(pair.get(0).getGenes().get(i));
-                            } else {
-                                newGenes.add(pair.get(1).getGenes().get(i));
-                            }
-                        }
-                    }
-                    Collections.sort(newGenes);
-                    int energy = pair.get(0).getEnergy()/4 + pair.get(1).getEnergy()/4;
-                    pair.get(0).changeEnergy(-pair.get(0).getEnergy()/4);
-                    pair.get(1).changeEnergy(-pair.get(1).getEnergy()/4);
-                    pair.get(0).numOfChildren += 1;
-                    pair.get(1).numOfChildren += 1;
-                    Animal newChild = new Animal(this, pair.get(0).getPosition(), newGenes, energy, this.currentGen);
 
+                    //creating new child
+                    Animal newChild = pair.get(0).createNewLife(pair.get(1), this.currentGen);
+
+                    //tracking descendants
                     if (this.trackedAnimal != null && (pair.get(0).getTrackedAnimal() == this.trackedAnimal ||
                             pair.get(1).getTrackedAnimal() == this.trackedAnimal)){
                         newChild.setTrackedAnimal(this.trackedAnimal);
                         this.trackedAnimal.addDescendant();
                     }
-                    this.engineObserver.addGlobalCount(1);
+
+                    //adding to map
                     this.placeNewChild(newChild);
                 }
             }
