@@ -160,8 +160,10 @@ public class Animal extends MapObject implements GlobalValues {
         }
         if (this.map.canMoveTo(newPosition)) {
             this.energy -= this.map.energyLoss;
-            this.positionChanged(this.position, newPosition);
+            Vector2d oldPosition = this.position;
             this.position = newPosition;
+            this.positionChanged(oldPosition, this.position);
+//            this.position = newPosition;
         }
     }
 

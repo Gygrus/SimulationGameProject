@@ -36,7 +36,7 @@ public class SimulationGuiMaker {
     public void displayDetails(Animal animal, VBox animalDetails){
         if (animal != null){
             animalDetails.getChildren().clear();
-            Label info = new Label("Animal map: Borderless, " + "Animal tracked energy: " + animal.getEnergy());
+            Label info = new Label("Animal tracked energy: " + animal.getEnergy());
             Label genes = new Label("Genom: " + animal.getGenes());
             Label children = new Label("Number of children: " + animal.getChildren());
             Label descendants = new Label("Number of descendants: " + animal.getDescendantsNumber());

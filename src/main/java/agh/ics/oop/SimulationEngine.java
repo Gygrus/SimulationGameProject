@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static java.lang.System.out;
 import static java.util.Collections.sort;
 
-public class SimulationEngine implements IEngine, Runnable {
+public class SimulationEngine implements IEngine, Runnable, GlobalValues {
     private final int moveDelay;
     private boolean running = true;
     private int numOfLiving = 0;
@@ -173,8 +173,9 @@ public class SimulationEngine implements IEngine, Runnable {
 
     private ArrayList<MapObject> getAllVisible(){
         ArrayList<MapObject> output = new ArrayList<MapObject>();
-        for (TreeSet<Animal> animals : this.map.getAnimals().values()){
-            output.add(animals.first());
+        for (ArrayList<Animal> animals : this.map.getAnimals().values()){
+            animals.sort(comparatorAnimal);
+            output.add(animals.get(0));
         }
 
         for (Grass bush : this.map.getBushes().values()){
@@ -187,7 +188,7 @@ public class SimulationEngine implements IEngine, Runnable {
 
     public ArrayList<MapObject> getAllWithGenes(ArrayList<Integer> genes){
         ArrayList<MapObject> output = new ArrayList<MapObject>();
-        for (TreeSet<Animal> animals : this.map.getAnimals().values()){
+        for (ArrayList<Animal> animals : this.map.getAnimals().values()){
             for (Animal animal : animals){
                 if (animal.getGenes().equals(genes)){
                     output.add(animal);

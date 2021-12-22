@@ -100,7 +100,6 @@ public class App extends Application {
     public void guiUpdate(ArrayList<MapObject> objects, AbstractWorldMap newMap,
                           SimulationEngine engine, GridPane gridpane, VBox gridData){
         Platform.runLater(()->{
-//            long pre = System.nanoTime();
             ArrayList<Number> worldData = engine.getStatisticsData();
             gridpane.setGridLinesVisible(false);
             gridpane.getChildren().clear();
@@ -108,12 +107,8 @@ public class App extends Application {
             gridpane.getRowConstraints().clear();
             this.guiMaker.displayDetails(this.trackedAnimal1, this.animalDetails1);
             this.guiMaker.displayDetails(this.trackedAnimal2, this.animalDetails2);
-            long pre = System.nanoTime();
             createGridPane(objects, newMap, gridpane);
-            long post = System.nanoTime();
             this.guiMaker.fillData(engine, newMap, gridData, worldData);
-//            long post = System.nanoTime();
-            out.println("GUI " + (post-pre)/1000000);
         });
     }
 
