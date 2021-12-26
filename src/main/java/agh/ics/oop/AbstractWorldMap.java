@@ -31,6 +31,8 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     private final MapVisualizer visualizer = new MapVisualizer(this);
     private SimulationEngine engineObserver;
 
+    public Animal getTrackedAnimal() { return this.trackedAnimal; }
+
     public SimulationEngine getEngineObserver() { return this.engineObserver; }
 
     public boolean getIsMagic() { return this.isMagic; }

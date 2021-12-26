@@ -214,26 +214,26 @@ public class SimulationGuiMaker {
         HBox infoBar5 = new HBox();
         Ellipse energySymbol5 = new Ellipse(5, 5);
         energySymbol5.setFill(Color.RED);
-        Label symbolCaption5 = new Label(" - animal with no less than 50% starting energy");
+        Label symbolCaption5 = new Label(" - animal with no less than 10% starting energy");
         infoBar5.getChildren().addAll(energySymbol5, symbolCaption5);
         infoBar5.setAlignment(Pos.CENTER);
 
         HBox infoBar6 = new HBox();
         Ellipse energySymbol6 = new Ellipse(5, 5);
         energySymbol6.setFill(Color.BLACK);
-        Label symbolCaption6 = new Label(" - animal with less than 60% starting energy");
+        Label symbolCaption6 = new Label(" - animal with less than 10% starting energy");
         infoBar6.getChildren().addAll(energySymbol6, symbolCaption6);
         infoBar6.setAlignment(Pos.CENTER);
 
         HBox infoBar7 = new HBox();
-        Rectangle energySymbol7 = new Rectangle(5, 5);
+        Rectangle energySymbol7 = new Rectangle(10, 10);
         energySymbol7.setFill(Color.LIGHTGREEN);
         Label symbolCaption7 = new Label(" - grass on savanna field");
         infoBar7.getChildren().addAll(energySymbol7, symbolCaption7);
         infoBar7.setAlignment(Pos.CENTER);
 
         HBox infoBar8 = new HBox();
-        Rectangle energySymbol8 = new Rectangle(5, 5);
+        Rectangle energySymbol8 = new Rectangle(10, 10);
         energySymbol8.setFill(Color.GREEN);
         Label symbolCaption8 = new Label(" - grass on jungle field");
         infoBar8.getChildren().addAll(energySymbol8, symbolCaption8);

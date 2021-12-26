@@ -146,7 +146,6 @@ public class Animal extends MapObject implements GlobalValues {
             Vector2d oldPosition = this.position;
             this.position = newPosition;
             this.positionChanged(oldPosition, this.position);
-//            this.position = newPosition;
         }
     }
 

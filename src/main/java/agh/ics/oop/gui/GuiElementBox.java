@@ -20,12 +20,11 @@ public class GuiElementBox {
 
     public VBox generateVBox(MapObject object, AbstractWorldMap newMap){
         VBox vBox;
-        if (object instanceof Animal){
+        if (object instanceof Animal animal){
             Ellipse newView = new Ellipse((float) 400 / (newMap.getWidth()*2.5), (float) 400 / (newMap.getHeight()*2.5));
             newView.setCenterX(50.0f);
             newView.setCenterY(50.0f);
-            Animal animal = (Animal) object;
-            if (animal.getTrackedAnimal() == animal){
+            if (animal == newMap.getTrackedAnimal()){
                 newView.setFill(Color.DEEPPINK);
             } else if (animal.getEnergy() >= (float) 0.8*animal.getMap().getEngineObserver().initialEnergy){
                 newView.setFill(Color.BLUE);
