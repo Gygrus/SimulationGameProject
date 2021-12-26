@@ -5,8 +5,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.System.out;
-
 public class Animal extends MapObject implements GlobalValues {
     private Animal trackedAnimal;
     private int descendantsNumber = 0;
@@ -14,10 +12,10 @@ public class Animal extends MapObject implements GlobalValues {
     private int numOfChildren = 0;
     public int birth, death;
     private int energy;
-    private ArrayList<Integer> genes;
+    private final ArrayList<Integer> genes;
     private Integer orientation;
-    private AbstractWorldMap map;
-    private List<IPositionChangeObserver> observerList = new ArrayList<>();
+    private final AbstractWorldMap map;
+    private final List<IPositionChangeObserver> observerList = new ArrayList<>();
 
 
     public Animal(AbstractWorldMap map, Vector2d initialPosition, ArrayList<Integer> genes, int energy, int birth) {
@@ -30,16 +28,6 @@ public class Animal extends MapObject implements GlobalValues {
         this.orientation = this.genes.get(ThreadLocalRandom.current().nextInt(0, 32));
     }
 
-    @Override
-    public String getInputStream() {
-        return switch (this.orientation) {
-            case 0 -> "src/main/resources/up.png";
-            case 4 -> "src/main/resources/down.png";
-            case 2 -> "src/main/resources/right.png";
-            case 6 -> "src/main/resources/left.png";
-            default -> "src/main/resources/up.png";
-        };
-    }
 
     public AbstractWorldMap getMap(){ return this.map; }
 
@@ -49,11 +37,6 @@ public class Animal extends MapObject implements GlobalValues {
     }
 
     public ArrayList<Integer> getGenes() { return this.genes; }
-
-    @Override
-    public String getLabel(){
-        return this.position.toString() + this.energy;
-    }
 
     public int getDescendantsNumber() { return this.descendantsNumber; }
 
@@ -89,7 +72,7 @@ public class Animal extends MapObject implements GlobalValues {
     }
 
     public Animal createNewLife(Animal partner, int currentGen){
-        ArrayList<Integer> newGenes = new ArrayList<Integer>();
+        ArrayList<Integer> newGenes = new ArrayList<>();
         int sum = this.getEnergy() + partner.getEnergy();
         if (ThreadLocalRandom.current().nextInt(0, 2) == 1){
             for (int i = 0; i < 32; i++){

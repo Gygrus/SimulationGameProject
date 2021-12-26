@@ -1,19 +1,15 @@
 package agh.ics.oop;
 
-import javax.xml.crypto.Data;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static java.lang.System.out;
-
 public class DataStatistics {
-    private ArrayList<Integer> animalDataCount = new ArrayList<>();
-    private ArrayList<Integer> bushesDataCount = new ArrayList<>();
-    private ArrayList<Double> energyDataValue = new ArrayList<>();
-    private ArrayList<Double> lifeSpanDataValue = new ArrayList<>();
-    private ArrayList<Double> averageChildrenDataCount = new ArrayList<>();
+    private final ArrayList<Integer> animalDataCount = new ArrayList<>();
+    private final ArrayList<Integer> bushesDataCount = new ArrayList<>();
+    private final ArrayList<Double> energyDataValue = new ArrayList<>();
+    private final ArrayList<Double> lifeSpanDataValue = new ArrayList<>();
+    private final ArrayList<Double> averageChildrenDataCount = new ArrayList<>();
 
     private long sumOfAnimals = 0;
     private long sumOfBushes = 0;
@@ -41,10 +37,6 @@ public class DataStatistics {
     }
 
     public void writeToFile() throws IOException {
-//        File dataFile = new File("../../resources/statistics/map1Data.csv");
-//        out.println("lala");
-//        dataFile.setWritable(true);
-//        dataFile.setReadable(true);
         FileWriter csvWriter;
         if (this.borders){
             csvWriter = new FileWriter("mapBorders.csv");

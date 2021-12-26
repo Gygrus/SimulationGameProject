@@ -2,8 +2,6 @@ package agh.ics.oop;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.HashMap;
 
-import static java.lang.System.out;
-
 public class GrassField extends AbstractWorldMap {
     private final int initialNumOfBushes;
     public GrassField(int n, int width, int height, float jungleRatio, boolean borders, int energyLoss, int bushEnergy, boolean isMagic) {
@@ -66,5 +64,7 @@ public class GrassField extends AbstractWorldMap {
     @Override public HashMap<Vector2d, Grass> getBushes() {
         return this.bushes;
     }
+
+
 
 }

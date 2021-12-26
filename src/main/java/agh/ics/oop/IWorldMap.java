@@ -48,8 +48,8 @@ public interface IWorldMap {
 
     boolean getBorders();
 
-    public int getWidth();
+    int getWidth();
 
-    public int getHeight();
+    int getHeight();
 }
 

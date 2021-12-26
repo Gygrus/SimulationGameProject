@@ -28,7 +28,7 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     protected int numOfBushes = 0;
     private HashMap<Vector2d, ArrayList<Animal>> animals = new HashMap<Vector2d, ArrayList<Animal>>();
     protected HashMap<Vector2d, Grass> bushes = new HashMap<Vector2d, Grass>();
-    private MapVisualizer visualizer = new MapVisualizer(this);
+    private final MapVisualizer visualizer = new MapVisualizer(this);
     private SimulationEngine engineObserver;
 
     public SimulationEngine getEngineObserver() { return this.engineObserver; }
@@ -63,12 +63,17 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public void addEngineObserver(SimulationEngine engineObserver) { this.engineObserver = engineObserver; }
 
+    public boolean checkIfInJungle(Vector2d position){
+        return position.getCordX() >= jungleLowerLeft.getCordX() && position.getCordX() <= jungleUpperRight.getCordX()
+                && position.getCordY() >= jungleLowerLeft.getCordY()
+                && position.getCordY() <= jungleUpperRight.getCordY();
+    }
+
     protected void generateBushesPosition() {
         for (int i = 0; i <= this.getWidth(); i++){
             for (int j = 0; j <= this.getHeight(); j++){
                 Vector2d vecToAdd = new Vector2d(i, j);
-                if (i >= jungleLowerLeft.getCordX() && i <= jungleUpperRight.getCordX() && j >= jungleLowerLeft.getCordY()
-                        && j <= jungleUpperRight.getCordY()){
+                if (checkIfInJungle(vecToAdd)){
                     this.bushesJungle.add(vecToAdd);
                 } else {
                     this.bushesSavanna.add(vecToAdd);
@@ -110,10 +115,11 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         for (Vector2d position: this.animals.keySet()){
             int len = this.animals.get(position).size();
             while (!this.animals.get(position).isEmpty() && this.animals.get(position).get(len-1).getEnergy() <= 0){
-                this.animals.get(position).get(len-1).death = currentGen;
-                this.engineObserver.addDeadLifeSpan(this.currentGen - this.animals.get(position).get(len-1).birth);
-                this.engineObserver.deleteAnimal(this.animals.get(position).get(len-1));
-                Animal obj = this.animals.get(position).remove(len-1);
+                Animal curAnimal = this.animals.get(position).get(len-1);
+                curAnimal.death = currentGen;
+                this.engineObserver.addDeadLifeSpan(this.currentGen - curAnimal.birth);
+                this.engineObserver.deleteAnimal(curAnimal);
+                this.animals.get(position).remove(len-1);
                 len -= 1;
             }
         }
@@ -137,15 +143,13 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     public boolean canMoveTo (Vector2d position) {
 
-        if (!this.getBorders()) {
+        if (!this.borders) {
             return true;
         }
-        if (!(position.precedes(this.upperRight)&&position.follows(this.lowerLeft))){
-            return false;
-        }
-        return true;
+        return position.precedes(this.upperRight) && position.follows(this.lowerLeft);
     }
 
+    // for initial animals
     public boolean place(Animal animal) {
         if (!isOccupied(animal.getPosition())){
             animal.addObserver(this);
@@ -160,11 +164,12 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return false;
     }
 
+    // for new animals - children
     public void placeNewChild(Animal animal){
         animal.addObserver(this);
         Integer val = this.engineObserver.getAllGenes().get(animal.getGenes());
         this.engineObserver.getAllGenes().put(animal.getGenes(), val == null ? 1 : val + 1);
-        this.getAnimals().get(animal.getPosition()).add(animal);
+        this.animals.get(animal.getPosition()).add(animal);
         this.engineObserver.addAnimal(animal);
     }
 
@@ -232,34 +237,9 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                     this.bushesSavanna.add(position);
                 }
                 this.bushesAll.add(position);
-//                this.animals.get(position).sort(comparatorAnimal);
             }
         }
         this.bushes.keySet().removeIf(key -> this.bushes.get(key) == null);
-//        for (ArrayList<Animal> set : this.animals.values()){
-//            if (set.size() > 1) {
-//                int comp = 1000000;
-//                for (Animal animal : set) {
-//                    comp = animal.getEnergy();
-//                    break;
-//                }
-//                out.println("pre");
-//                for (Animal animal : set) {
-//                    if (comp < animal.getEnergy()){
-//                        out.println("lalalaa"+comp + " " + animal.getEnergy());
-//                    }
-//                    comp = animal.getEnergy();
-//                    out.println(animal.getEnergy());
-//                }
-//                out.println("post");
-//            }
-//        }
-    }
-
-    private boolean checkIfInJungle(Vector2d position){
-        return position.getCordX() >= jungleLowerLeft.getCordX() && position.getCordX() <= jungleUpperRight.getCordX()
-                && position.getCordY() >= jungleLowerLeft.getCordY()
-                && position.getCordY() <= jungleUpperRight.getCordY();
     }
 
     public void reproduce(){
@@ -282,24 +262,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
                     this.placeNewChild(newChild);
                 }
             }
-//            for (ArrayList<Animal> set : this.animals.values()){
-//                if (set.size() > 1) {
-//                    int comp = 1000000;
-//                    for (Animal animal : set) {
-//                        comp = animal.getEnergy();
-//                        break;
-//                    }
-//                    out.println("pre");
-//                    for (Animal animal : set) {
-//                        if (comp < animal.getEnergy()){
-//                            out.println("lalalaa"+comp + " " + animal.getEnergy());
-//                        }
-//                        comp = animal.getEnergy();
-//                        out.println(animal.getEnergy());
-//                    }
-//                    out.println("post");
-//                }
-//            }
 
         }
 

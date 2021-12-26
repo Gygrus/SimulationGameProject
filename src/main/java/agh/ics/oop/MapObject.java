@@ -7,9 +7,4 @@ public abstract class MapObject {
         return this.position;
     }
 
-    abstract public String getInputStream();
-
-    public String getLabel() {
-        return this.position.toString();
-    }
 }

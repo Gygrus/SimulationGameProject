@@ -1,20 +1,15 @@
 package agh.ics.oop.gui;
 
-
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import org.w3c.dom.Text;
 
 import java.util.function.UnaryOperator;
 
 public class MenuGui {
-    private App appObserver;
+    private final App appObserver;
     private TextField animalNumber1 = new TextField("10"), animalNumber2 = new TextField("10");
     private TextField map1Width = new TextField("10"), map2Width = new TextField("10");
     private TextField map1Height = new TextField("10"), map2Height = new TextField("10");
@@ -61,6 +56,7 @@ public class MenuGui {
     private void fillWithOptions(VBox mapOptions, int maptype){
 
         // kod ze strony https://edencoding.com/javafx-textfield/
+        // walidator na liczbę nieujemną całkowitą
         UnaryOperator<TextFormatter.Change> numberValidationFormatter = change -> {
             if(change.getText().matches("\\d+")){
                 return change; //if change is a number
@@ -70,6 +66,7 @@ public class MenuGui {
             }
         };
 
+        // walidator na liczbę niecałkowitą nieujemną
         UnaryOperator<TextFormatter.Change> doubleValidationFormatter = change -> {
             if(change.getText().matches("\\d+") || change.getText().matches(".")){
                 return change; //if change is a number
@@ -134,7 +131,7 @@ public class MenuGui {
             mapOptions.getChildren().addAll(title, widthBox, heightBox, anNumBox, startEnBox, moveEnBox,
                     plantEnBox, jRatBox, this.isMagic1);
         } else {
-            Label title = new Label("Options for borderless map");
+            Label title = new Label("Options for map with borders");
 
             this.map2Width = new TextField("10");
             this.map2Height = new TextField("10");
@@ -190,10 +187,10 @@ public class MenuGui {
                     Integer.parseInt(this.moveEnergy2.getText()) > 0 &&
                     Integer.parseInt(this.plantEnergy1.getText()) > 0 &&
                     Integer.parseInt(this.plantEnergy2.getText()) > 0 &&
-                    this.jungleRatio1.getText().matches("\\d+\\.\\d+") &&
+//                    this.jungleRatio1.getText().matches("\\d+\\.\\d+") &&
                     Float.parseFloat(this.jungleRatio1.getText()) > 0 &&
                     Float.parseFloat(this.jungleRatio1.getText()) <= 1 &&
-                    this.jungleRatio2.getText().matches("\\d+\\.\\d+") &&
+//                    this.jungleRatio2.getText().matches("\\d+\\.\\d+") &&
                     Float.parseFloat(this.jungleRatio2.getText()) > 0 &&
                     Float.parseFloat(this.jungleRatio2.getText()) <= 1){
 

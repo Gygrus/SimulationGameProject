@@ -1,13 +1,8 @@
 package agh.ics.oop;
-
-//import agh.ics.oop.gui.App;
-
 import agh.ics.oop.gui.App;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -45,10 +40,7 @@ public class SimulationEngine implements IEngine, Runnable, GlobalValues {
     public HashMap<ArrayList<Integer>, Integer> getAllGenes() { return this.allGenes; }
 
     private void spawnAnimals(int number){
-        boolean check = false;
-        if (this.animals.size() == 5){
-            check = true;
-        }
+        boolean check = this.animals.size() == 5;
         for (int i = 0; i < number; i++) {
             ArrayList<Integer> genes = new ArrayList<Integer>();
             if (!check) {
@@ -121,7 +113,7 @@ public class SimulationEngine implements IEngine, Runnable, GlobalValues {
     }
 
     private void sendStatisticsData() {
-        this.dataManager.addStatistics(this.getNumOfLiving(), this.map.getBushes().size(), this.updateAverageEnergy(),
+        this.dataManager.addStatistics(this.numOfLiving, this.map.getBushes().size(), this.updateAverageEnergy(),
                 this.updateAverageDeadLifeSpan(), this.updateAverageChildren());
     }
 
@@ -165,7 +157,6 @@ public class SimulationEngine implements IEngine, Runnable, GlobalValues {
         this.numOfLiving -= 1;
         this.animals.remove(animal);
     }
-
 
     public void addGuiObserver(App observer){
         this.guiObserver = observer;
@@ -220,7 +211,7 @@ public class SimulationEngine implements IEngine, Runnable, GlobalValues {
     }
 
     public void run(){
-        while (true) {
+        while (this.numOfLiving > 0) {
             if (this.running) {
                 this.sendStatisticsData();
                 this.map.deleteBodies();

@@ -4,27 +4,18 @@ import agh.ics.oop.GrassField;
 import agh.ics.oop.*;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-
 import java.util.ArrayList;
-import java.util.TreeSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import static java.lang.System.out;
-
 
 public class App extends Application {
     private AbstractWorldMap map1, map2;
@@ -41,13 +32,11 @@ public class App extends Application {
     private Animal trackedAnimal1 = null;
     private Animal trackedAnimal2 = null;
     private final GuiElementBox vBoxGenerator = new GuiElementBox();
-    private final int moveDelay = 10;
-    private final int numOfAnimals = 10;
     private SimulationEngine engine1, engine2;
     private final LineChart<String, Number> dataChart1 = new LineChart<String, Number>(new CategoryAxis(), new NumberAxis());
     private final LineChart<String, Number> dataChart2 = new LineChart<String, Number>(new CategoryAxis(), new NumberAxis());
-    private SimulationGuiMaker guiMaker = new SimulationGuiMaker(this.vBoxGenerator, this.moveDelay);
-    private MenuGui menuGuiMaker = new MenuGui(this);
+    private final SimulationGuiMaker guiMaker = new SimulationGuiMaker(this.vBoxGenerator);
+    private final MenuGui menuGuiMaker = new MenuGui(this);
 
     public int animalNumber1, animalNumber2;
     public int map1Width, map2Width;
@@ -58,8 +47,8 @@ public class App extends Application {
     public float jungleRatio1, jungleRatio2;
     public boolean isMagic1, isMagic2;
 
-    ScheduledExecutorService scheduledExecutorService2 = Executors.newSingleThreadScheduledExecutor();
-    ScheduledExecutorService scheduledExecutorService1 = Executors.newSingleThreadScheduledExecutor();
+    ScheduledExecutorService chartsExecutor2 = Executors.newSingleThreadScheduledExecutor();
+    ScheduledExecutorService chartsExecutor1 = Executors.newSingleThreadScheduledExecutor();
 
     @Override
     public void init() {
@@ -79,7 +68,7 @@ public class App extends Application {
         }
     }
 
-    // info about magic condition being fullfilled and freezing simulation
+    // info about magic condition being fulfilled and freezing simulation
     public void magicConditionInfo(SimulationEngine engine){
         Platform.runLater(()-> {
             Label info = new Label("Magic condition has occured! 5 animals duplicated");
@@ -107,37 +96,9 @@ public class App extends Application {
             gridpane.getRowConstraints().clear();
             this.guiMaker.displayDetails(this.trackedAnimal1, this.animalDetails1);
             this.guiMaker.displayDetails(this.trackedAnimal2, this.animalDetails2);
-            createGridPane(objects, newMap, gridpane);
-            this.guiMaker.fillData(engine, newMap, gridData, worldData);
+            this.guiMaker.createGridPane(objects, newMap, gridpane);
+            this.guiMaker.fillData(engine, gridData, worldData);
         });
-    }
-
-
-    // generate map
-    private void createGridPane(ArrayList<MapObject> objects, AbstractWorldMap newMap, GridPane gridpane) {
-        gridpane.setGridLinesVisible(true);
-        Vector2d lowerLeft = newMap.lLeftGet();
-        Vector2d upperRight = newMap.uRightGet();
-
-        int width = upperRight.getCordX() - lowerLeft.getCordX() + 1;
-        int height = upperRight.getCordY() - lowerLeft.getCordY() + 1;
-
-        ColumnConstraints colConst = new ColumnConstraints(400/width);
-        RowConstraints rowConst = new RowConstraints(400/height);
-
-        for (int i = 0; i < width; i++){
-            gridpane.getColumnConstraints().add(colConst);
-        }
-
-        for (int i = 0; i < height; i++){
-            gridpane.getRowConstraints().add(rowConst);
-        }
-
-        for (MapObject obj : objects){
-            gridpane.add(this.vBoxGenerator.generateVBox(obj, newMap), obj.getPosition().getCordX() -
-                    lowerLeft.getCordX(), upperRight.getCordY()-(obj.getPosition().getCordY()));
-        }
-
     }
 
     // generate pause buttons
@@ -173,7 +134,6 @@ public class App extends Application {
         } else {
             return 100;
         }
-//        return 20;
     }
 
     // start simulation and display scene with given constraints
@@ -201,8 +161,8 @@ public class App extends Application {
         this.gridpane1.setAlignment(Pos.CENTER);
         this.gridpane2.setAlignment(Pos.CENTER);
 
-        this.guiMaker.createDataPopulationChart(this.dataChart1, this.map1, this.scheduledExecutorService1, this.engine1);
-        this.guiMaker.createDataPopulationChart(this.dataChart2, this.map2, this.scheduledExecutorService2, this.engine2);
+        this.guiMaker.createDataPopulationChart(this.dataChart1, this.map1, this.chartsExecutor1, this.engine1);
+        this.guiMaker.createDataPopulationChart(this.dataChart2, this.map2, this.chartsExecutor2, this.engine2);
         BorderPane mainPane = new BorderPane();
 
         VBox layoutFirst = new VBox();
@@ -215,6 +175,8 @@ public class App extends Application {
         this.createPauseButton(mainPane);
 
         VBox animDetails = new VBox();
+        this.guiMaker.createSymbolInfo(animDetails);
+
         this.guiMaker.createAnimalDetails(animDetails, this.submitData1, this.animalDetails1, this.showGenes, this.gridpane1,
                 this.engine1, this.map1);
         this.guiMaker.createAnimalDetails(animDetails, this.submitData2, this.animalDetails2, this.showGenes2, this.gridpane2,
@@ -236,7 +198,6 @@ public class App extends Application {
 
     }
 
-
     public void start(Stage primaryStage){
         primaryStage.setScene(this.menuGuiMaker.generateScene());
         primaryStage.show();
@@ -245,8 +206,8 @@ public class App extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        scheduledExecutorService1.shutdownNow();
-        scheduledExecutorService2.shutdownNow();
+        chartsExecutor1.shutdownNow();
+        chartsExecutor2.shutdownNow();
     }
 
 }
