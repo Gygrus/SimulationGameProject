@@ -11,3 +11,12 @@ Klasą uruchamiającą symulację jest World.
 
 ## Screeny z programu
 
+### *Panel opcji*
+![Options](https://github.com/Gygrus/SimulationGameProject/blob/master/images/Panel%20opcji.jpg)
+
+### *Widoki z symulacji*
+![Sim1](https://github.com/Gygrus/SimulationGameProject/blob/master/images/Symulacja1.jpg)
+
+![Sim2](https://github.com/Gygrus/SimulationGameProject/blob/master/images/Symulacja2.jpg)
+
+![Sim3](https://github.com/Gygrus/SimulationGameProject/blob/master/images/Symulacja3.jpg)
